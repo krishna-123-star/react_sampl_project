@@ -1,28 +1,51 @@
 import React, { useEffect, useState } from "react";
 import {
-  Container, Typography, Paper, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, TablePagination
+  Container,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
 } from "@mui/material";
 import client from "../api/client";
 
+// Define a proper Quote type
+interface Quote {
+  id: number | string;
+  quote: string;
+  author: string;
+}
+
 export default function Quotes() {
-  const [quotes, setQuotes] = useState<any[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
 
   useEffect(() => {
-    client.get("/quotes").then((res) => setQuotes(res.data.quotes || [])).catch((err) => console.error(err));
+    client
+      .get("/quotes")
+      .then((res) => setQuotes(res.data.quotes || []))
+      .catch((err) => console.error(err));
   }, []);
 
-  const handleChangePage = (_: any, newPage: number) => setPage(newPage);
-  const handleChangeRowsPerPage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
+
+  const handleChangeRowsPerPage = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setRowsPerPage(parseInt(e.target.value, 10));
     setPage(0);
   };
 
   return (
     <Container>
-      <Typography variant="h5" gutterBottom>Quotes</Typography>
+      <Typography variant="h5" gutterBottom>
+        Quotes
+      </Typography>
 
       <Paper>
         <TableContainer>
@@ -35,13 +58,15 @@ export default function Quotes() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {quotes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((q) => (
-                <TableRow key={q.id}>
-                  <TableCell>{q.id}</TableCell>
-                  <TableCell>“{q.quote}”</TableCell>
-                  <TableCell>{q.author}</TableCell>
-                </TableRow>
-              ))}
+              {quotes
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((q) => (
+                  <TableRow key={q.id}>
+                    <TableCell>{q.id}</TableCell>
+                    <TableCell>“{q.quote}”</TableCell>
+                    <TableCell>{q.author}</TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
